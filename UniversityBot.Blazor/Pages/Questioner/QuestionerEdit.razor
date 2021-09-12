@@ -1,0 +1,83 @@
+﻿@page "/question/edit/{Id:guid}"
+
+@using UniversityBot.EF
+@using Microsoft.Extensions.Logging
+@using UniversityBot.Infrastructure
+@using UniversityBot.Infrastructure.WordProcessing
+
+@inject AppDbContext Context
+@inject NavigationManager NavigationManager
+@inject ILogger<QuestionerEdit> Logger
+@inject KeywordAnalyzer KeywordAnalyzer
+@inject FileTransformer FileTransformer
+@inject KeywordFactory KeywordFactory
+
+<Form Loading="@(EditBotQuestion == null)"
+      LabelCol="new ColLayoutParam {Span = 3}"
+      Model="@EditBotQuestion">
+    <FormItem Label="Вопрос">
+        <Input @bind-Value="@context.Question"/>
+    </FormItem>
+    <FormItem Label="Ответ">
+        <TextArea @bind-Value="@context.Answer" MinRows="4"></TextArea>
+    </FormItem>
+    <FormItem Label="Родительский вопрос">
+        <Select ShowSearch
+                DefaultValue="@(StrParentId)"
+                Placeholder="введите текст для поиска родителя"
+                @bind-Value="@StrParentId"
+                AllowClear
+                OnSearch="@(async (value) => await OnSearch(value))">
+            @if (_child.Count == 0 && context.ParentId != null)
+            {
+                <SelectOption Value="@(StrParentId)">@(context.Parent?.Question)</SelectOption>
+            }
+
+            @foreach (var v in _child)
+            {
+                <SelectOption Value="@(v.Id.ToString())">@(v.Question)</SelectOption>
+            }
+        </Select>
+    </FormItem>
+
+    <FormItem Label="Ключевые слова">
+        <AntList Bordered DataSource="@context.ReactionKeywords">
+            <ChildContent Context="item">
+                <ListItem>
+                    <Text>@item.Word</Text>
+                    <Checkbox Checked="item.Required" Disabled="true"/>
+                    <Button OnClick="@(() => DeleteReactionKeyword(@item))">Удалить</Button>
+                </ListItem>
+            </ChildContent>
+        </AntList>
+        <SpaceItem>
+            <div class="container-fluid">
+                <div class="row pt-2">
+                    <Input Placeholder="Ключевое слово" @bind-Value="@CreateReactionKeyword"/>
+                </div>
+                <div class="row pt-2">
+                    <Checkbox Checked="@RequiredReactionKeyword" 
+                              CheckedChange="() => RequiredReactionKeyword = !RequiredReactionKeyword">
+                       Обязательное
+                    </Checkbox>
+                </div>
+                <div class="row pt-2">
+                    <Button HtmlType="button" OnClick="AddReactionKeyword">Добавить</Button>
+                </div>
+            </div>
+        </SpaceItem>
+
+    </FormItem>
+
+    <FormItem Label="Файлы">
+        <FileLoader
+            @ref="_loader"
+            InitialItems="@_dbFiles"
+            Multiple="true"/>
+
+    </FormItem>
+    <FormItem>
+        <Button Type="@ButtonType.Primary" HtmlType="submit" OnClick="Save">Сохранить</Button>
+        <Button Type="@ButtonType.Primary" HtmlType="submit" OnClick="Cancel">Отменить</Button>
+    </FormItem>
+</Form>

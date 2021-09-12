@@ -1,0 +1,74 @@
+﻿@page "/command/edit/{Id:guid}"
+@using UniversityBot.EF
+@using UniversityBot.Infrastructure.Command
+@using System.Text
+@using Microsoft.Extensions.ObjectPool
+
+@inject AppDbContext Context
+@inject CommandHandlerMetadataStore CommandHandlerStore;
+@inject NavigationManager NavigationManager
+@inject ObjectPool<StringBuilder> StringBuilderPool
+
+@if (_command == null)
+{
+    <span>Загрузка...</span>
+}
+else
+{
+    <Form @ref="_form" class="pt-3" Model="@_command" OnFinish="HandleValidSubmit">
+
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <FormItem>
+                <p class="text-danger">@_error</p>
+            </FormItem>
+        }
+    
+        <FormItem>
+            <Input Placeholder="Команда" @bind-Value="@context.UserFriendlyName"/>
+            <Checkbox Checked="@_command.ShowInAllCommandList"
+                      CheckedChange="() => _command.ShowInAllCommandList = !_command.ShowInAllCommandList">
+                Отображать в списке команд
+            </Checkbox>
+        </FormItem>
+    
+        <FormItem>
+            <AntList Bordered DataSource="@context.Questions">
+                <ChildContent Context="item">
+                    <ListItem>
+                        <span><Text>@item.Question</Text></span>
+                        <Button OnClick="@(() => DeleteHandleName(@item))">Удалить</Button>
+                    </ListItem>
+                </ChildContent>
+            </AntList>
+            <SpaceItem>
+                <div class="container-fluid">
+                    <div class="row pt-2">
+                        <Input Placeholder="Команда(напр. /sleep)" @bind-Value="@CreateHandleName"/>
+                    </div>
+                    <div class="row pt-2">
+                        <Button HtmlType="button" OnClick="AddHandleName">Добавить</Button>
+                    </div>
+                </div>
+            </SpaceItem>
+
+        </FormItem>
+    
+        <FormItem>
+            <TextArea Placeholder="Ответ"  MinRows="5" @bind-Value="@context.Answer"></TextArea>
+        </FormItem>
+
+        <FormItem>
+            <Button HtmlType="submit">
+                @if (IsNew)
+                {
+                    <span>Добавить</span>   
+                }
+                else
+                {
+                    <span>Сохранить</span>   
+                }
+            </Button>
+        </FormItem>
+    </Form>   
+}

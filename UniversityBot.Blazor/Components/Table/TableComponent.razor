@@ -1,0 +1,44 @@
+﻿@using UniversityBot.Blazor.Extension
+@typeparam TModel
+
+@if (Data == null)
+{
+    <span>Загрузка...</span>
+}
+else
+{
+    <Table @ref="_table" 
+           DataSource="@Data"
+           Total="_total"
+           @bind-PageSize="_pageSize"
+           @bind-PageIndex="_pageIndex"
+           OnPageIndexChange="ChangePageIndex">
+    
+        @Columns(context)
+    
+        @if (Source.AnyCommandEnabled())
+        {
+            <ActionColumn Title="Действие">
+                <Space Size="middle">
+                    @if (Source.EnableDeleteCommand)
+                    {
+                        <SpaceItem>
+                            <Button OnClick="async () => await DeleteCommand(context)">Удалить</Button>
+                        </SpaceItem>
+                    }
+                    @if (Source.EnableEditCommand)
+                    {
+                        <SpaceItem>
+                            <Button OnClick="async () => await EditCommand(context)">Редактировать</Button>
+                        </SpaceItem>
+                    }
+                </Space>
+            </ActionColumn>   
+        }
+    </Table>
+
+    @if (Source.EnableCreateCommand)
+    {
+        <Button OnClick="Create">Добавить</Button>      
+    }
+}

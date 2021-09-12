@@ -1,0 +1,42 @@
+﻿@page "/welcome/edit/{Id:guid}"
+@using UniversityBot.EF
+
+@inject AppDbContext Context
+@inject NavigationManager NavigationManager
+
+@if (_welcome == null)
+{
+    <span>Загрузка...</span>
+}
+else
+{
+    <Form @ref="_form" class="pt-3" Model="@_welcome" OnFinish="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        
+        <FormItem>
+            <TextArea Placeholder="Сообщение" MinRows="5" @bind-Value="@context.Text"></TextArea>
+        </FormItem>
+
+        <FormItem>
+            <Placeholder @bind-Value="@context.Text"></Placeholder>
+        </FormItem>
+        
+        <FormItem>
+            <Input Placeholder="Порядок" @bind-Value="@context.Order"/>
+            <ValidationMessage For="@(() => context.Order)" />
+        </FormItem>
+
+        <FormItem>
+            <Button HtmlType="submit">
+                @if (IsNew)
+                {
+                    <span>Добавить</span>
+                }
+                else
+                {
+                    <span>Сохранить</span>
+                }
+            </Button>
+        </FormItem>
+    </Form>   
+}

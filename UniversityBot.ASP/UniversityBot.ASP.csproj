@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <LangVersion>9</LangVersion>
+        <AssemblyName>UniversityBot.ASP</AssemblyName>
+        <RootNamespace>UniversityBot.ASP</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Blowin.Optional" Version="3.0.1" />
+        <PackageReference Include="Dawn.Guard" Version="1.12.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.9" />
+        <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.11.1" />
+        <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.11.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\UniversityBot.Infrastructure\UniversityBot.Infrastructure.csproj" />
+      <ProjectReference Include="..\UniversityBot.ServiceProvider.Configuration\UniversityBot.ServiceProvider.Configuration.csproj" />
+      <ProjectReference Include="..\UniversityBot.Sqlite\UniversityBot.Sqlite.csproj" />
+    </ItemGroup>
+
+</Project>

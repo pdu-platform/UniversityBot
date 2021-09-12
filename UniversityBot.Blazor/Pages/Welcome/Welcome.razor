@@ -1,0 +1,12 @@
+﻿@page "/welcome"
+@using UniversityBot.EF
+
+@inject AppDbContext Context
+@inject NavigationManager NavigationManager
+
+<TableComponent Source="@_commandTableSource">
+    <Columns>
+        <Column Sortable="true" @bind-Field="@context.Text"/>
+        <Column Sortable="true" @bind-Field="@context.Order"/>
+    </Columns>
+</TableComponent>

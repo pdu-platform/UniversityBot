@@ -1,0 +1,67 @@
+﻿@page "/settings"
+
+@using UniversityBot.Infrastructure
+@using UniversityBot.EF
+
+@inject UnitOfWork UnitOfWork
+@inject NavigationManager NavigationManager
+
+<Form Model="@_settings"
+      OnFinish="Save">
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <FormItem>
+            <Text Class="text-danger">@_error</Text>
+        </FormItem>
+    }
+
+    <Card Title="Настройки ответов пользователю">
+        <CardGrid Style="width: 100%">
+            <FormItem>
+                <Card Title="Сообщение для пользователя, если не найден ответ">
+                    <CardGrid Style="width: 100%">
+                        <Input @bind-Value="@(context.NotFoundAnswerMessage)"/>
+                        <div class="pt-2">
+                            <Placeholder @bind-Value="@(context.NotFoundAnswerMessage)"></Placeholder>
+                        </div>
+                    </CardGrid>
+                </Card>
+            </FormItem>
+
+            <FormItem>
+                <Checkbox Checked="@context.SplitWelcomeMessage" CheckedChange="@(() => context.SplitWelcomeMessage = !context.SplitWelcomeMessage)">
+                    Разделять приветственные сообщения
+                </Checkbox>
+            </FormItem>
+        </CardGrid>
+    </Card>
+
+    <Card Class="mt-3" Title="Настройки алгоритма">
+        <CardGrid Style="width: 100%">
+            <FormItem>
+                <Text>Минимальное количество совпадений</Text>
+                <AntDesign.InputNumber @bind-Value="InputNumber" Min="1" DefaultValue="1"></AntDesign.InputNumber>
+            </FormItem>
+            <FormItem>
+                <Checkbox Checked="@context.OnlyAnswerWithMaxMatch" CheckedChange="@(() => context.OnlyAnswerWithMaxMatch = !context.OnlyAnswerWithMaxMatch)">
+                    Отображать ответы только с максимальным совпадение
+                </Checkbox>
+            </FormItem>
+            <FormItem>
+                <Checkbox Checked="@context.UseFuzzySearch" CheckedChange="@(() => context.UseFuzzySearch = !context.UseFuzzySearch)">
+                    Использовать нечеткий поиск
+                </Checkbox>
+            </FormItem>
+            <FormItem>
+                <Checkbox Checked="@context.DontDisplayChildAndParentQuestionInAnswer"
+                          CheckedChange="@(() => context.DontDisplayChildAndParentQuestionInAnswer = !context.DontDisplayChildAndParentQuestionInAnswer)">
+                    Не отображать родителей и дочерние вопросы в одном ответе
+                </Checkbox>
+            </FormItem>
+        </CardGrid>
+    </Card>
+
+    <FormItem>
+        <Button Class="mt-3" HtmlType="submit">Сохранить</Button>
+    </FormItem>
+</Form>

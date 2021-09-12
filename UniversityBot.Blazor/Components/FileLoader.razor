@@ -1,0 +1,65 @@
+﻿@using UniversityBot.Blazor.Data
+@using UniversityBot.Infrastructure
+@using Microsoft.Extensions.Logging
+
+@inject FileTransformer FileTransformer
+@inject ILogger<FileLoader> Logger
+
+@if (!string.IsNullOrEmpty(Error))
+{
+    @foreach (var error in @Error.Split(Environment.NewLine))
+    {
+        <p class="text-danger">@error</p>   
+    }
+}
+<div class="dropzone @dropClass rounded">
+    @if (Multiple)
+    {
+        <InputFile
+            id="fileInput"
+            OnChange="async e => await OnChangeInputFile(e)"
+            @ondragenter="HandleDragEnter"
+            @ondragleave="HandleDragLeave"
+            title=""
+            multiple/>
+    }
+    else
+    {
+        <InputFile
+            id="fileInput"
+            OnChange="async e => await OnChangeInputFile(e)"
+            @ondragenter="HandleDragEnter"
+            @ondragleave="HandleDragLeave"
+            title=""/>   
+    }
+    
+    @if (Store.Count > 0)
+    {
+        <div class="container">
+            <div class="row">
+                @foreach (var file in Store.Files)
+                {
+                    <div class="col p-2 d-flex">
+                        @if (file.IsImage && file.Base64.IsSome)
+                        {
+                            var base64 = file.Base64.Value;
+                            <img src="@base64" height="200" width="200" alt="">
+                        }
+                        else
+                        {
+                            <div class="file_block">
+                                <div class="file_title">
+                                    @file.Name
+                                </div>
+                            </div>
+                        }
+                        <button class="btn btn-link text-danger p-0 pl-1" type="button"
+                                @onclick="async (e) => await RemoveItem(file)">
+                            <div class="align-text-top h-100">x</div>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

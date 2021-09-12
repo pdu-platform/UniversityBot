@@ -1,0 +1,18 @@
+﻿@page "/statistic"
+@using UniversityBot.EF
+
+@inject AppDbContext Context
+
+<Tabs DefaultActiveKey="1" Type="@TabType.Card" Size="@TabSize.Default">
+    <TabPane Key="1">
+        <Tab>Таблица</Tab>
+        <ChildContent>
+            <TableComponent Source="@_statisticTableSource">
+                <Columns>
+                    <Column Sortable="false" @bind-Field="@context.Question"/>
+                    <Column Sortable="true" @bind-Field="@context.CreateDate"/>
+                </Columns>
+            </TableComponent>
+        </ChildContent>
+    </TabPane>
+</Tabs>

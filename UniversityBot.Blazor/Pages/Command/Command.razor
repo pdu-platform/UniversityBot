@@ -1,0 +1,21 @@
+﻿@page "/command"
+@using UniversityBot.EF
+@using System.Text
+@using Microsoft.Extensions.ObjectPool
+@using UniversityBot.Infrastructure.Command
+
+@inject AppDbContext Context
+@inject CommandHandlerMetadataStore CommandHandlerStore;
+@inject NavigationManager NavigationManager
+@inject ObjectPool<StringBuilder> StringBuilderPool
+
+<TableComponent Source="@_commandTableSource">
+    <Columns>
+         <Column Sortable="true" @bind-Field="@context.UserFriendlyName"/>
+            <Column Sortable="true" @bind-Field="@context.JoinHandleNames"/>
+            <Column Sortable="true" @bind-Field="@context.Answer"/>
+            <Column @bind-Field="@context.ShowInAllCommandList">
+                <Checkbox Checked="@context.ShowInAllCommandList" Disabled="true"></Checkbox>
+            </Column>
+    </Columns>
+</TableComponent>

@@ -1,0 +1,54 @@
+﻿@using UniversityBot.Core
+@using Microsoft.Extensions.ObjectPool
+@using System.Text
+@using UniversityBot.Infrastructure.Extension
+
+@inject ObjectPool<StringBuilder> _pool
+
+<Select DefaultValue="@(SelectedPlaceholder)"
+        @bind-Value="@SelectedPlaceholder"
+        Style="width:250px">
+    @foreach (var i in FormatRequest.Metadata)
+    {
+        <SelectOption Value="@(i.Property)">@i.UserFriendlyName</SelectOption>
+    }
+</Select>
+<Button OnClick="OnInsertPlaceholder">Вставить</Button>
+
+@code {
+    [Parameter]
+    public string Value { get; set; }
+    
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+    
+    private string SelectedPlaceholder { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        SelectedPlaceholder = FormatRequest.Metadata[0].Property;
+    }
+
+    private Task OnInsertPlaceholder()
+    {
+        if(string.IsNullOrWhiteSpace(SelectedPlaceholder))
+            return Task.CompletedTask;
+
+        if (Value == null)
+            Value = string.Empty;
+
+        using var scope = _pool.GetScoped();
+
+        var builder = scope.Item.Append(Value);
+        if (Value.Length != 0)
+            builder.Append(' ');
+
+        Value = FormatRequest.Metadata
+            .Single(e => e.Property == SelectedPlaceholder)
+            .Append(builder)
+            .ToString();
+        
+        return ValueChanged.InvokeAsync(Value);
+    }
+}
